@@ -39,21 +39,14 @@
   .word span { display: inline-block; transition: font-weight .25s ease-out, color .25s; }
   .word span.hot { color: var(--accent); }
 
-  .controls { display: grid; grid-template-columns: 1fr 1.2fr 1fr; align-items: center; gap: 40px; padding: 20px 40px 28px; }
-  .slider { display: flex; align-items: center; gap: 16px; }
-  .slider input { flex: 1; accent-color: var(--accent); }
+  .controls { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; padding: 20px 40px 32px; }
   .lead { font-size: 18px; line-height: 1.5; }
   .actions { display: flex; justify-content: flex-end; gap: 20px; align-items: center; }
   .btn { padding: 14px 24px; border-radius: 999px; background: var(--ink); color: var(--bg); }
   .btn:hover { background: var(--accent); }
   .link { text-decoration: underline; text-underline-offset: 3px; }
 
-  .ticker { overflow: hidden; background: var(--accent); color: var(--bg); border-top: 1px solid var(--line); }
-  .ticker__track { display: flex; width: max-content; animation: run 60s linear infinite; }
-  .ticker__track span { padding: 14px 0; font-style: italic; font-size: 26px; white-space: nowrap; }
-  .ticker__track span::after { content: "✦"; margin: 0 28px; font-style: normal; font-size: 16px; vertical-align: middle; }
-  @keyframes run { to { transform: translateX(-50%); } }
-  @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } .word span { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .word span { transition: none; } }
 </style>
 </head>
 <body>
@@ -73,24 +66,15 @@
   </section>
 
   <div class="controls">
-    <label class="slider mono">тишина <input id="voice" type="range" min="200" max="900" value="300" aria-label="От тишины к крику"> крик</label>
-    <div><p class="lead">О том, что чувствуют все, но говорят немногие.</p><p class="mono" style="margin-top:10px;color:var(--muted)">Проведите курсором по буквам</p></div>
+    <p class="lead">О том, что чувствуют все, но говорят немногие.</p>
     <div class="actions mono"><a class="link" href="#">Читать стихи</a><a class="btn" href="#">Выбрать книгу</a></div>
   </div>
 
-  <div class="ticker" aria-hidden="true"><div class="ticker__track" id="ticker"></div></div>
-
 <script>
 // Буквы «дышат»: чем ближе курсор, тем жирнее и ярче буква — тишина становится криком.
-const lines = [
-  "Сегодня слова о любви ничего в себе не несут",
-  "Но признанье в любви должно быть тихим и кротким",
-  "Острой бритвой в гневе становятся слова",
-  "Я увижу тебя через долгие десятки лет",
-  "У меня есть место, где могу спрятаться"
-];
 const stage = document.getElementById("stage");
-const voice = document.getElementById("voice");
+// Базовая насыщенность — 30% шкалы 200…900 (фиксирована)
+const BASE = 200 + 0.3 * (900 - 200);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const letters = [];
@@ -108,7 +92,7 @@ stage.addEventListener("pointermove", (e) => (mouse = { x: e.clientX, y: e.clien
 stage.addEventListener("pointerleave", () => (mouse = null));
 
 function frame() {
-  const base = +voice.value;
+  const base = BASE;
   t += 0.03;
   letters.forEach((s, i) => {
     let k; // 0…1 — насколько «кричит» буква
@@ -125,11 +109,7 @@ function frame() {
   });
   if (!reduce) requestAnimationFrame(frame);
 }
-voice.addEventListener("input", () => reduce && frame());
 frame();
-
-const track = document.getElementById("ticker");
-[...lines, ...lines].forEach((l) => { const s = document.createElement("span"); s.textContent = l; track.append(s); });
 </script>
 </body>
 </html>
