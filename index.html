@@ -7,67 +7,39 @@
   <meta name="description" content="Стихи Вячеслава Алексейчикова. Сборники «Между строк» и «Тайны одинокого сердца».">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Literata:ital,opsz,wght@0,7..72,400;1,7..72,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=PT+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="logo" href="#top" aria-label="Вячеслав Алексейчиков — на главную">
-      <span class="logo__mark">ВА</span>
-      <span class="logo__name">Вячеслав Алексейчиков</span>
-    </a>
-    <nav class="nav" aria-label="Разделы">
-      <a href="#books">Книги</a>
-      <a href="#poems">Стихи</a>
-      <a href="#about">Об авторе</a>
-    </nav>
-    <a class="btn btn--outline" href="#books">Купить книги</a>
-  </header>
-
   <main id="top">
-    <section class="hero" aria-label="Главный экран">
-      <div class="intro">
-        <h1 class="intro__title">Кричащая тишина несказанных <span class="accent">слов</span></h1>
-        <p class="intro__lead">О том, что чувствуют все, но говорят немногие.</p>
-        <div class="intro__actions">
-          <a class="btn btn--primary" href="#books">Выбрать книгу</a>
-          <a class="link" href="#poems">Читать стихи</a>
-        </div>
+    <section class="hero" id="hero">
+      <header class="site-header mono">
+        <a class="logo" href="#top">ВА · Вячеслав Алексейчиков</a>
+        <nav class="nav" aria-label="Разделы">
+          <a href="#books">Книги</a>
+          <a href="#poems">Стихи</a>
+          <a href="#about">Об авторе</a>
+        </nav>
+        <a class="buy" href="#books">Купить книги</a>
+      </header>
+      <div class="hero__row mono">
+        <span>Поэзия</span><span>«Между строк»</span><span>«Тайны одинокого сердца»</span><span>Стихи о несказанном</span>
       </div>
 
-      <!-- Печатная машинка: геометрия 1:1 из Figma (980×522), масштабируется в script.js -->
-      <div class="tw" aria-hidden="true">
-        <div class="tw__stage">
-          <div class="tw__carriage" id="tw-carriage">
-            <div class="tw__rod"></div>
-            <div class="tw__platen"></div>
-            <div class="tw__knob tw__knob--l"><img src="assets/typewriter/knob.svg" alt=""></div>
-            <img class="tw__ridges tw__ridges--l" src="assets/typewriter/knob-ridges.png" width="56.84" height="56.84" alt="">
-            <img class="tw__cap tw__cap--l" src="assets/typewriter/knob-cap.svg" alt="">
-            <div class="tw__knob tw__knob--r"><img src="assets/typewriter/knob.svg" alt=""></div>
-            <img class="tw__ridges tw__ridges--r" src="assets/typewriter/knob-ridges.png" width="56.84" height="56.84" alt="">
-            <img class="tw__cap tw__cap--r" src="assets/typewriter/knob-cap.svg" alt="">
-            <div class="tw__paper"><div class="tw__text" id="tw-text"></div></div>
-            <div class="tw__bail"></div>
-            <div class="tw__ticks"></div>
-            <div class="tw__roller tw__roller--l"></div>
-            <div class="tw__roller tw__roller--r"></div>
-          </div>
-          <div class="tw__body">
-            <div class="tw__base"></div>
-            <div class="tw__shell"></div>
-            <div class="tw__spool tw__spool--l"></div>
-            <div class="tw__spool tw__spool--r"></div>
-            <div class="tw__basket"><img src="assets/typewriter/type-basket.svg" alt=""></div>
-            <div class="tw__bars"><img src="assets/typewriter/type-bars.png" width="302.828" height="77.791" alt=""></div>
-            <div class="tw__ribbon"></div>
-            <img class="tw__guide" src="assets/typewriter/type-guide.svg" alt="">
-          </div>
-          <div class="tw__keyboard" id="tw-keyboard"></div>
+      <!-- Живые буквы: вес растёт рядом с курсором (script.js) -->
+      <div class="hero__stage" id="stage">
+        <h1 class="sr-only">Кричащая тишина несказанных слов</h1>
+        <span class="hero__word hero__word--italic" data-text="Кричащая тишина" aria-hidden="true"></span>
+        <span class="hero__word" data-text="несказанных слов" aria-hidden="true"></span>
+      </div>
+
+      <div class="hero__bottom">
+        <p class="hero__lead">О том, что чувствуют все, но говорят немногие.</p>
+        <div class="hero__actions mono">
+          <a class="link" href="#poems">Читать стихи</a>
+          <a class="btn btn--primary" href="#books">Выбрать книгу</a>
         </div>
       </div>
-      <!-- Для скринридеров: что печатает машинка -->
-      <p class="sr-only" id="tw-live"></p>
     </section>
 
     <section class="books" id="books">
