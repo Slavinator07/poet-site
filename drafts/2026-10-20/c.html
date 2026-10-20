@@ -88,7 +88,14 @@ document.querySelectorAll(".word").forEach((w) => {
 });
 
 let mouse = null, t = 0;
-stage.addEventListener("pointermove", (e) => (mouse = { x: e.clientX, y: e.clientY }));
+// Активная зона по вертикали: от середины между верхом сцены и текстом до середины между текстом и низом сцены
+const words = document.querySelectorAll(".word");
+stage.addEventListener("pointermove", (e) => {
+  const st = stage.getBoundingClientRect();
+  const top = (st.top + words[0].getBoundingClientRect().top) / 2;
+  const bottom = (words[words.length - 1].getBoundingClientRect().bottom + st.bottom) / 2;
+  mouse = e.clientY >= top && e.clientY <= bottom ? { x: e.clientX, y: e.clientY } : null;
+});
 stage.addEventListener("pointerleave", () => (mouse = null));
 
 function frame() {
