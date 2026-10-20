@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Стихи</title>
+  <meta name="description" content="Сайт со стихами">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#">Имя Автора</a>
+    <nav class="nav">
+      <a href="#poems">Стихи</a>
+      <a href="#about">Об авторе</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="Главный экран">
+      <p class="hero__label">— стихи</p>
+      <h1 class="hero__title">
+        <span class="typewriter" id="typewriter" aria-live="polite"></span><span class="caret" aria-hidden="true"></span>
+      </h1>
+      <a class="hero__scroll" href="#poems">читать ↓</a>
+    </section>
+
+    <section class="poems" id="poems">
+      <h2 class="section-title">Стихи</h2>
+      <article class="poem">
+        <h3 class="poem__title">Название стихотворения</h3>
+        <p class="poem__text">Здесь будет первая строка,<br>
+        здесь — вторая, чуть тише,<br>
+        а третья уйдёт в облака,<br>
+        и четвёртая — выше.</p>
+      </article>
+    </section>
+
+    <section class="about" id="about">
+      <h2 class="section-title">Об авторе</h2>
+      <p>Несколько слов об авторе.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Имя Автора</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
