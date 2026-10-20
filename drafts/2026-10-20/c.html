@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Вариант C — Тишина и крик</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  /* Референс: Kern Society (One Page Love, 13.10.2026): буквы «с пульсом», моно-подписи, бегущая строка, живые контролы. */
+  :root { --bg: #f4f3ef; --ink: #18171a; --muted: #6b6862; --line: #18171a; --accent: #b3261e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow-x: hidden; }
+  body { background: var(--bg); color: var(--ink); font-family: "Literata", serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+
+  .head { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px; border-bottom: 1px solid var(--line); }
+  .head nav { display: flex; gap: 28px; }
+  .head nav a:hover { color: var(--accent); }
+  .buy { padding: 10px 16px; background: var(--ink); color: var(--bg); }
+  .buy:hover { background: var(--accent); }
+
+  .row { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
+  .row > * { padding: 12px 40px; border-right: 1px solid var(--line); }
+  .row > *:last-child { border-right: 0; }
+
+  body { display: flex; flex-direction: column; min-height: 100vh; }
+  .stage { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 40px 8px; user-select: none; }
+  .word {
+    display: block; white-space: nowrap;
+    font-size: 15.2vw; line-height: .86; letter-spacing: -.02em;
+    font-variation-settings: "opsz" 72;
+  }
+  .word:nth-child(2) { text-align: right; font-style: italic; }
+  .word span { display: inline-block; transition: font-weight .25s ease-out, color .25s; }
+  .word span.hot { color: var(--accent); }
+
+  .controls { display: grid; grid-template-columns: 1fr 1.2fr 1fr; align-items: center; gap: 40px; padding: 20px 40px 28px; }
+  .slider { display: flex; align-items: center; gap: 16px; }
+  .slider input { flex: 1; accent-color: var(--accent); }
+  .lead { font-size: 18px; line-height: 1.5; }
+  .actions { display: flex; justify-content: flex-end; gap: 20px; align-items: center; }
+  .btn { padding: 14px 24px; border-radius: 999px; background: var(--ink); color: var(--bg); }
+  .btn:hover { background: var(--accent); }
+  .link { text-decoration: underline; text-underline-offset: 3px; }
+
+  .ticker { overflow: hidden; background: var(--accent); color: var(--bg); border-top: 1px solid var(--line); }
+  .ticker__track { display: flex; width: max-content; animation: run 60s linear infinite; }
+  .ticker__track span { padding: 14px 0; font-style: italic; font-size: 26px; white-space: nowrap; }
+  .ticker__track span::after { content: "✦"; margin: 0 28px; font-style: normal; font-size: 16px; vertical-align: middle; }
+  @keyframes run { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } .word span { transition: none; } }
+</style>
+</head>
+<body>
+  <header class="head mono">
+    <a href="../../">ВА · Вячеслав Алексейчиков</a>
+    <nav><a href="#">Книги</a><a href="#">Стихи</a><a href="#">Об авторе</a></nav>
+    <a class="buy" href="#">Купить книги</a>
+  </header>
+  <div class="row mono">
+    <span>Поэзия</span><span>«Между строк»</span><span>«Тайны одинокого сердца»</span><span>Стихи о несказанном</span>
+  </div>
+
+  <section class="stage" id="stage" aria-label="Кричащая тишина">
+    <span class="word" data-text="Кричащая"></span>
+    <span class="word" data-text="тишина"></span>
+  </section>
+
+  <div class="controls">
+    <label class="slider mono">тишина <input id="voice" type="range" min="200" max="900" value="300" aria-label="От тишины к крику"> крик</label>
+    <p class="lead">Несказанные слова — о том, что чувствуют все, но говорят немногие. Проведите курсором по буквам.</p>
+    <div class="actions mono"><a class="link" href="#">Читать стихи</a><a class="btn" href="#">Выбрать книгу</a></div>
+  </div>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker__track" id="ticker"></div></div>
+
+<script>
+// Буквы «дышат»: чем ближе курсор, тем жирнее и ярче буква — тишина становится криком.
+const lines = [
+  "Сегодня слова о любви ничего в себе не несут",
+  "Но признанье в любви должно быть тихим и кротким",
+  "Острой бритвой в гневе становятся слова",
+  "Я увижу тебя через долгие десятки лет",
+  "У меня есть место, где могу спрятаться"
+];
+const stage = document.getElementById("stage");
+const voice = document.getElementById("voice");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const letters = [];
+document.querySelectorAll(".word").forEach((w) => {
+  [...w.dataset.text].forEach((ch) => {
+    const s = document.createElement("span");
+    s.textContent = ch;
+    w.append(s);
+    letters.push(s);
+  });
+});
+
+let mouse = null, t = 0;
+stage.addEventListener("pointermove", (e) => (mouse = { x: e.clientX, y: e.clientY }));
+stage.addEventListener("pointerleave", () => (mouse = null));
+
+function frame() {
+  const base = +voice.value;
+  t += 0.03;
+  letters.forEach((s, i) => {
+    let k; // 0…1 — насколько «кричит» буква
+    if (mouse) {
+      const b = s.getBoundingClientRect();
+      const d = Math.hypot(b.left + b.width / 2 - mouse.x, b.top + b.height / 2 - mouse.y);
+      k = Math.max(0, 1 - d / 320);
+    } else {
+      k = (Math.sin(t - i * 0.45) + 1) / 2 * 0.6; // без курсора по словам идёт тихая волна
+    }
+    const w = Math.round(base + (900 - base) * k);
+    s.style.fontWeight = w;
+    s.classList.toggle("hot", k > 0.75);
+  });
+  if (!reduce) requestAnimationFrame(frame);
+}
+voice.addEventListener("input", () => reduce && frame());
+frame();
+
+const track = document.getElementById("ticker");
+[...lines, ...lines].forEach((l) => { const s = document.createElement("span"); s.textContent = l; track.append(s); });
+</script>
+</body>
+</html>

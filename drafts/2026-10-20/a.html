@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Вариант A — Проявление</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=Literata:opsz,wght@7..72,400&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  /* Референс: Cartier — Le Chœur des Pierres (Awwwards SOTD 20.10.2026): белое поле, чёрный, «проявление гуаши». */
+  :root { --bg: #fafafa; --ink: #111; --muted: #77746f; --line: #e4e2dc; --accent: #b3261e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Literata", Georgia, serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .head { display: flex; justify-content: space-between; align-items: center; padding: 22px 48px; font-family: "PT Mono", monospace; font-size: 13px; }
+  .logo { display: flex; gap: 10px; align-items: center; letter-spacing: .08em; text-transform: uppercase; }
+  .logo b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--bg); font-weight: 400; font-size: 12px; letter-spacing: 0; }
+  .nav { display: flex; gap: 32px; }
+  .nav a:hover { color: var(--accent); }
+
+  .hero {
+    display: grid; grid-template-columns: 1fr 1.1fr; align-items: center; gap: 64px;
+    min-height: calc(100vh - 74px); padding: 24px 48px 64px;
+  }
+  .label { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  h1 {
+    margin: 28px 0 32px;
+    font-family: "Cormorant Garamond", serif; font-weight: 400; font-style: italic;
+    font-size: clamp(56px, 6.4vw, 104px); line-height: .95; letter-spacing: -.02em;
+  }
+  h1 span { color: var(--accent); }
+  .lead { max-width: 420px; font-size: 17px; line-height: 1.65; color: var(--muted); }
+  .actions { display: flex; gap: 24px; align-items: center; margin-top: 40px; font-family: "PT Mono", monospace; font-size: 14px; }
+  .btn { padding: 15px 26px; border-radius: 999px; background: var(--ink); color: var(--bg); transition: background .25s; }
+  .btn:hover { background: var(--accent); }
+  .actions .link { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Лист, на котором «проявляется» строфа */
+  .sheet {
+    position: relative; padding: 72px 64px 64px;
+    background: #fff; box-shadow: 0 30px 80px rgba(0,0,0,.07);
+    cursor: crosshair;
+  }
+  .sheet__title { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 40px; margin-bottom: 28px; }
+  .sheet__text span { display: block; font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: 27px; line-height: 1.55; }
+  .sheet__sign { margin-top: 32px; font-family: "PT Mono", monospace; font-size: 12px; color: var(--muted); }
+  .sheet canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hint { margin-top: 18px; font-family: "PT Mono", monospace; font-size: 12px; color: var(--muted); text-align: right; }
+</style>
+</head>
+<body>
+  <header class="head">
+    <a class="logo" href="../../"><b>ВА</b>Вячеслав Алексейчиков</a>
+    <nav class="nav"><a href="#">Книги</a><a href="#">Стихи</a><a href="#">Об авторе</a></nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <p class="label">Сборник «Между строк»</p>
+      <h1>Кричащая тишина несказанных <span>слов</span></h1>
+      <p class="lead">О том, что чувствуют все, но говорят немногие.</p>
+      <div class="actions"><a class="btn" href="#">Выбрать книгу</a><a class="link" href="#">Читать стихи</a></div>
+    </div>
+
+    <div>
+      <div class="sheet" id="sheet">
+        <p class="sheet__title">Без слов</p>
+        <p class="sheet__text">
+          <span>Слова о любви потеряли былую силу</span>
+          <span>И я не стану их тебе говорить.</span>
+          <span>Я лишь хочу, чтобы во взгляде моём ты ловила</span>
+          <span>Откровенье – без тебя мне не жить.</span>
+        </p>
+        <p class="sheet__sign">— В. Алексейчиков</p>
+        <canvas id="ink" aria-hidden="true"></canvas>
+      </div>
+      <p class="hint">проведите курсором по листу</p>
+    </div>
+  </section>
+
+<script>
+// Лист закрыт «бумагой»; кисть стирает её мягкими мазками — строки проявляются, как гуашь.
+const sheet = document.getElementById("sheet");
+const cv = document.getElementById("ink");
+const ctx = cv.getContext("2d");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let W, H, dpr;
+
+function cover(alpha = 1) {
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+  ctx.fillRect(0, 0, W, H);
+}
+function resize() {
+  dpr = devicePixelRatio || 1;
+  W = sheet.offsetWidth; H = sheet.offsetHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cover();
+}
+
+// Мазок: несколько мягких пятен с разбросом — неровный край, как у кисти
+function dab(x, y, r) {
+  ctx.globalCompositeOperation = "destination-out";
+  for (let i = 0; i < 5; i++) {
+    const rx = x + (Math.random() - .5) * r * .8;
+    const ry = y + (Math.random() - .5) * r * .5;
+    const rr = r * (.55 + Math.random() * .5);
+    const g = ctx.createRadialGradient(rx, ry, 0, rx, ry, rr);
+    g.addColorStop(0, "rgba(0,0,0,.55)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(rx, ry, rr, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+// Автоматическая кисть идёт по строкам слева направо
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function stroke(y, x0, x1, r) {
+  for (let x = x0; x <= x1; x += 6) {
+    dab(x, y + Math.sin(x / 40) * 4, r);
+    if (x % 18 === 0) await sleep(16);
+  }
+}
+async function autoPaint() {
+  const rows = [...sheet.querySelectorAll(".sheet__title, .sheet__text span, .sheet__sign")];
+  for (const el of rows) {
+    const y = el.offsetTop + el.offsetHeight / 2;
+    await stroke(y, el.offsetLeft - 20, el.offsetLeft + el.offsetWidth + 20, el.offsetHeight * .75);
+    await sleep(260);
+  }
+}
+async function loop() {
+  for (;;) {
+    await autoPaint();
+    await sleep(7000);
+    for (let i = 0; i < 40; i++) { cover(.06); await sleep(40); } // бумага снова «затягивает» текст
+    cover();
+    await sleep(800);
+  }
+}
+
+sheet.addEventListener("pointermove", (e) => {
+  const b = sheet.getBoundingClientRect();
+  dab(e.clientX - b.left, e.clientY - b.top, 34);
+});
+
+if (reduce) { cv.remove(); }
+else { resize(); addEventListener("resize", resize); loop(); }
+</script>
+</body>
+</html>

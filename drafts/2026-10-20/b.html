@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Вариант B — Ритм</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  /* Референс: Maria Vasilyeva Portfolio (Awwwards SOTD 09.10.2026): музыка и ритм в типографике, заметки-аннотации. */
+  :root { --bg: #131313; --ink: #f4f2ec; --muted: #85827c; --line: #2a2a2a; --accent: #e0483e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Cormorant Garamond", serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .head { display: flex; justify-content: space-between; align-items: center; padding: 22px 48px; border-bottom: 1px solid var(--line); }
+  .head .logo { color: var(--ink); }
+  .nav { display: flex; gap: 32px; }
+  .nav a:hover { color: var(--ink); }
+
+  .hero { display: grid; grid-template-columns: 5fr 7fr; min-height: calc(100vh - 66px); }
+  .left { display: flex; flex-direction: column; justify-content: space-between; padding: 56px 48px; border-right: 1px solid var(--line); }
+  h1 { font-weight: 500; font-size: clamp(64px, 7.5vw, 124px); line-height: .9; letter-spacing: -.02em; }
+  h1 i { color: var(--accent); }
+  .lead { max-width: 360px; margin-top: 28px; font-size: 22px; line-height: 1.4; color: var(--muted); }
+  .actions { display: flex; gap: 24px; align-items: center; }
+  .btn { padding: 15px 26px; border-radius: 999px; background: var(--ink); color: var(--bg); font-family: "PT Mono", monospace; font-size: 14px; transition: background .25s, color .25s; }
+  .btn:hover { background: var(--accent); color: var(--ink); }
+  .link { font-family: "PT Mono", monospace; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+
+  .right { position: relative; display: flex; flex-direction: column; justify-content: center; padding: 56px 64px; }
+  .meta { display: flex; justify-content: space-between; margin-bottom: 40px; }
+  .poem { counter-reset: n; }
+  .line {
+    position: relative; display: grid; grid-template-columns: 36px 1fr 110px; align-items: baseline;
+    padding: 14px 0; border-top: 1px solid var(--line);
+    font-size: clamp(22px, 1.95vw, 32px); line-height: 1.25;
+    transition: color .3s;
+  }
+  .line:last-child { border-bottom: 1px solid var(--line); }
+  .line::before { counter-increment: n; content: counter(n, decimal-leading-zero); font-family: "PT Mono", monospace; font-size: 12px; color: var(--muted); }
+  .note { font-family: "PT Mono", monospace; font-size: 11px; color: var(--muted); text-align: right; opacity: 0; transform: translateX(-8px); transition: opacity .3s, transform .3s; }
+  .line:hover .note, .line.is-current .note { opacity: 1; transform: none; }
+  .line.is-current { color: var(--ink); }
+  .poem.is-playing .line:not(.is-current) { color: #6d6a65; }
+
+  /* Ударный слог: на долю такта загорается и получает знак ударения */
+  .s { position: relative; display: inline-block; transition: color .15s, transform .15s; }
+  .s::after { content: "́"; position: absolute; left: 50%; top: -.1em; transform: translateX(-50%); opacity: 0; transition: opacity .15s; }
+  .s.on { color: var(--accent); transform: translateY(-3px); }
+  .s.on::after { opacity: 1; }
+
+  .beat { display: flex; gap: 6px; margin-top: 40px; align-items: flex-end; height: 28px; }
+  .beat i { flex: 1; height: 4px; background: var(--line); transition: height .15s, background .15s; }
+  .beat i.on { height: 28px; background: var(--accent); }
+  .toggle { margin-top: 18px; align-self: flex-start; cursor: pointer; background: none; border: 0; }
+  .toggle:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+  <header class="head">
+    <a class="mono logo" href="../../">ВА — Вячеслав Алексейчиков</a>
+    <nav class="nav mono"><a href="#">Книги</a><a href="#">Стихи</a><a href="#">Об авторе</a></nav>
+  </header>
+
+  <section class="hero">
+    <div class="left">
+      <div>
+        <p class="mono">Сборник «Между строк»</p>
+        <h1 style="margin-top:28px">Ритм <i>несказанных</i> слов</h1>
+        <p class="lead">О том, что чувствуют все, но говорят немногие.</p>
+      </div>
+      <div class="actions"><a class="btn" href="#">Выбрать книгу</a><a class="link" href="#">Читать стихи</a></div>
+    </div>
+
+    <div class="right">
+      <div class="meta mono"><span>«Без слов» — строфа III</span><span id="tempo">♩ = 112</span></div>
+      <div class="poem" id="poem"></div>
+      <div class="beat" id="beat" aria-hidden="true"></div>
+      <button class="toggle mono" id="toggle">❚❚ пауза</button>
+    </div>
+  </section>
+
+<script>
+// «+» стоит перед ударной гласной. Метроном проходит по ударениям строфы — стих звучит как музыка.
+const lines = [
+  "Слов+а о любв+и потер+яли б+ылую с+илу",
+  "И +я не ст+ану их теб+е говор+ить.",
+  "Я л+ишь хоч+у, чт+обы во взгл+яде мо+ём ты лов+ила",
+  "Откров+енье – без теб+я мне не ж+ить."
+];
+const BPM = 112;
+const poem = document.getElementById("poem");
+const beat = document.getElementById("beat");
+const toggle = document.getElementById("toggle");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const stresses = [];
+lines.forEach((src, li) => {
+  const row = document.createElement("div");
+  row.className = "line";
+  const text = document.createElement("span");
+  const parts = src.split("+");
+  text.append(parts[0]);
+  for (let i = 1; i < parts.length; i++) {
+    const s = document.createElement("span");
+    s.className = "s";
+    s.textContent = parts[i][0];
+    s.dataset.line = li;
+    text.append(s, parts[i].slice(1));
+    stresses.push(s);
+  }
+  const note = document.createElement("span");
+  note.className = "note";
+  note.textContent = `ударений: ${parts.length - 1}`;
+  row.append(text, note);
+  poem.append(row);
+});
+const rows = [...poem.children];
+for (let i = 0; i < 16; i++) beat.append(document.createElement("i"));
+const bars = [...beat.children];
+
+let step = 0, timer = null;
+function tick() {
+  stresses.forEach((s) => s.classList.remove("on"));
+  const s = stresses[step % stresses.length];
+  s.classList.add("on");
+  rows.forEach((r, i) => r.classList.toggle("is-current", i === +s.dataset.line));
+  bars.forEach((b, i) => b.classList.toggle("on", i === step % bars.length));
+  step++;
+  // в конце строки — пауза в одну долю, как вдох
+  const lastInLine = stresses[step % stresses.length]?.dataset.line !== s.dataset.line;
+  timer = setTimeout(tick, (60000 / BPM) * (lastInLine ? 2 : 1));
+}
+function play() { poem.classList.add("is-playing"); toggle.textContent = "❚❚ пауза"; tick(); }
+function stop() { clearTimeout(timer); timer = null; poem.classList.remove("is-playing"); toggle.textContent = "▶ ритм"; }
+toggle.addEventListener("click", () => (timer ? stop() : play()));
+document.getElementById("tempo").textContent = `♩ = ${BPM}`;
+reduce ? stop() : play();
+</script>
+</body>
+</html>
