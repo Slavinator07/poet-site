@@ -15,6 +15,7 @@
   html, body { overflow-x: hidden; }
   body { background: var(--bg); color: var(--ink); font-family: "Literata", serif; -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-decoration: none; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .mono { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
 
   .head { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px; border-bottom: 1px solid var(--line); }
@@ -30,8 +31,8 @@
   body { display: flex; flex-direction: column; min-height: 100vh; }
   .stage { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 40px 8px; user-select: none; }
   .word {
-    display: block; white-space: nowrap;
-    font-size: 15.2vw; line-height: .86; letter-spacing: -.02em;
+    display: block; white-space: pre;
+    font-size: 10.2vw; line-height: .95; letter-spacing: -.02em;
     font-variation-settings: "opsz" 72;
   }
   .word:nth-child(2) { text-align: right; font-style: italic; }
@@ -65,14 +66,15 @@
     <span>Поэзия</span><span>«Между строк»</span><span>«Тайны одинокого сердца»</span><span>Стихи о несказанном</span>
   </div>
 
-  <section class="stage" id="stage" aria-label="Кричащая тишина">
-    <span class="word" data-text="Кричащая"></span>
-    <span class="word" data-text="тишина"></span>
+  <section class="stage" id="stage" aria-label="Главный экран">
+    <h1 class="sr-only">Кричащая тишина несказанных слов</h1>
+    <span class="word" data-text="Кричащая тишина" aria-hidden="true"></span>
+    <span class="word" data-text="несказанных слов" aria-hidden="true"></span>
   </section>
 
   <div class="controls">
     <label class="slider mono">тишина <input id="voice" type="range" min="200" max="900" value="300" aria-label="От тишины к крику"> крик</label>
-    <p class="lead">Несказанные слова — о том, что чувствуют все, но говорят немногие. Проведите курсором по буквам.</p>
+    <div><p class="lead">О том, что чувствуют все, но говорят немногие.</p><p class="mono" style="margin-top:10px;color:var(--muted)">Проведите курсором по буквам</p></div>
     <div class="actions mono"><a class="link" href="#">Читать стихи</a><a class="btn" href="#">Выбрать книгу</a></div>
   </div>
 
