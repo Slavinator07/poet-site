@@ -73,8 +73,8 @@
 <script>
 // Буквы «дышат»: чем ближе курсор, тем жирнее и ярче буква — тишина становится криком.
 const stage = document.getElementById("stage");
-// Базовая насыщенность — 30% шкалы 200…900 (фиксирована)
-const BASE = 200 + 0.3 * (900 - 200);
+// Базовая насыщенность: 30% шкалы 200…900 (= 410) и ещё на 10% тоньше ≈ 369 (фиксирована)
+const BASE = Math.round((200 + 0.3 * (900 - 200)) * 0.9);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const letters = [];
