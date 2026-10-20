@@ -3,50 +3,157 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Стихи</title>
-  <meta name="description" content="Сайт со стихами">
+  <title>Вячеслав Алексейчиков — стихи</title>
+  <meta name="description" content="Стихи Вячеслава Алексейчикова. Сборники «Между строк» и «Тайны одинокого сердца».">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Literata:ital,opsz,wght@0,7..72,400;1,7..72,400&family=PT+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="logo" href="#">Имя Автора</a>
-    <nav class="nav">
+    <a class="logo" href="#top" aria-label="Вячеслав Алексейчиков — на главную">
+      <span class="logo__mark">ВА</span>
+      <span class="logo__name">Вячеслав Алексейчиков</span>
+    </a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="#books">Книги</a>
       <a href="#poems">Стихи</a>
       <a href="#about">Об авторе</a>
     </nav>
+    <a class="btn btn--outline" href="#books">Купить книги</a>
   </header>
 
-  <main>
+  <main id="top">
     <section class="hero" aria-label="Главный экран">
-      <p class="hero__label">— стихи</p>
-      <h1 class="hero__title">
-        <span class="typewriter" id="typewriter" aria-live="polite"></span><span class="caret" aria-hidden="true"></span>
-      </h1>
-      <a class="hero__scroll" href="#poems">читать ↓</a>
+      <div class="intro">
+        <h1 class="intro__title">Кричащая тишина несказанных <span class="accent">слов</span></h1>
+        <p class="intro__lead">О том, что чувствуют все, но говорят немногие.</p>
+        <div class="intro__actions">
+          <a class="btn btn--primary" href="#books">Выбрать книгу</a>
+          <a class="link" href="#poems">Читать стихи</a>
+        </div>
+      </div>
+
+      <!-- Печатная машинка: геометрия 1:1 из Figma (980×522), масштабируется в script.js -->
+      <div class="tw" aria-hidden="true">
+        <div class="tw__stage">
+          <div class="tw__carriage" id="tw-carriage">
+            <div class="tw__rod"></div>
+            <div class="tw__platen"></div>
+            <div class="tw__knob tw__knob--l"><img src="assets/typewriter/knob.svg" alt=""></div>
+            <img class="tw__ridges tw__ridges--l" src="assets/typewriter/knob-ridges.png" width="56.84" height="56.84" alt="">
+            <img class="tw__cap tw__cap--l" src="assets/typewriter/knob-cap.svg" alt="">
+            <div class="tw__knob tw__knob--r"><img src="assets/typewriter/knob.svg" alt=""></div>
+            <img class="tw__ridges tw__ridges--r" src="assets/typewriter/knob-ridges.png" width="56.84" height="56.84" alt="">
+            <img class="tw__cap tw__cap--r" src="assets/typewriter/knob-cap.svg" alt="">
+            <div class="tw__paper"><div class="tw__text" id="tw-text"></div></div>
+            <div class="tw__bail"></div>
+            <div class="tw__ticks"></div>
+            <div class="tw__roller tw__roller--l"></div>
+            <div class="tw__roller tw__roller--r"></div>
+          </div>
+          <div class="tw__body">
+            <div class="tw__base"></div>
+            <div class="tw__shell"></div>
+            <div class="tw__spool tw__spool--l"></div>
+            <div class="tw__spool tw__spool--r"></div>
+            <div class="tw__basket"><img src="assets/typewriter/type-basket.svg" alt=""></div>
+            <div class="tw__bars"><img src="assets/typewriter/type-bars.png" width="302.828" height="77.791" alt=""></div>
+            <div class="tw__ribbon"></div>
+            <img class="tw__guide" src="assets/typewriter/type-guide.svg" alt="">
+          </div>
+          <div class="tw__keyboard" id="tw-keyboard"></div>
+        </div>
+      </div>
+      <!-- Для скринридеров: что печатает машинка -->
+      <p class="sr-only" id="tw-live"></p>
+    </section>
+
+    <section class="books" id="books">
+      <p class="label">Книги</p>
+      <h2 class="section-title">Два сборника</h2>
+      <div class="books__grid">
+        <article class="book">
+          <img class="book__cover" src="assets/books/mezhdu-strok.jpg" width="1061" height="1500" alt="Обложка книги «Между строк»: горящая раскрытая книга на тёмном фоне">
+          <p class="label">Вторая книга</p>
+          <h3 class="book__title">Между строк</h3>
+          <a class="link link--light" href="#poems">Читать стихи из сборника</a>
+        </article>
+        <article class="book">
+          <img class="book__cover" src="assets/books/tajny-odinokogo-serdtsa.jpg" width="1061" height="1500" alt="Обложка книги «Тайны одинокого сердца»: силуэт человека под снегом у фонаря">
+          <p class="label">Первая книга</p>
+          <h3 class="book__title">Тайны одинокого сердца</h3>
+        </article>
+      </div>
     </section>
 
     <section class="poems" id="poems">
-      <h2 class="section-title">Стихи</h2>
-      <article class="poem">
-        <h3 class="poem__title">Название стихотворения</h3>
-        <p class="poem__text">Здесь будет первая строка,<br>
-        здесь — вторая, чуть тише,<br>
-        а третья уйдёт в облака,<br>
-        и четвёртая — выше.</p>
-      </article>
+      <p class="label">Стихи</p>
+      <h2 class="section-title">Из сборника «Между строк»</h2>
+      <div class="reader">
+        <div class="reader__list" role="tablist" aria-label="Стихотворения">
+          <button role="tab" aria-selected="true" aria-controls="poem-1" id="tab-1"><span>01</span>Без слов</button>
+          <button role="tab" aria-selected="false" aria-controls="poem-2" id="tab-2"><span>02</span>И что же скажи во мне ты нашла?</button>
+          <button role="tab" aria-selected="false" aria-controls="poem-3" id="tab-3"><span>03</span>Слова</button>
+          <button role="tab" aria-selected="false" aria-controls="poem-4" id="tab-4"><span>04</span>Лекарство от одиночества</button>
+          <button role="tab" aria-selected="false" aria-controls="poem-5" id="tab-5"><span>05</span>Призраки прошлого</button>
+        </div>
+
+        <article class="poem" id="poem-1" role="tabpanel" aria-labelledby="tab-1">
+          <h3 class="poem__title">Без слов</h3>
+          <p>Сегодня слова о любви ничего в себе не несут.<br>За ними нет чувств, за ними нет правды.<br>Говоря их люди сами себе только лгут,<br>Но сокроют обман и каждый будет оправдан.</p>
+          <p>«Я люблю тебя!» – говорят громко и чётко<br>В ресторане, на площади, в парке и дома,<br>Но признанье в любви должно быть тихим и кротким<br>«Я люблю тебя» – и будет слышно даже глухому.</p>
+          <p>Слова о любви потеряли былую силу<br>И я не стану их тебе говорить.<br>Я лишь хочу, чтобы во взгляде моём ты ловила<br>Откровенье – без тебя мне не жить.</p>
+        </article>
+
+        <article class="poem" id="poem-2" role="tabpanel" aria-labelledby="tab-2" hidden>
+          <h3 class="poem__title">И что же скажи во мне ты нашла?</h3>
+          <p>И что же скажи во мне ты нашла?<br>Ведь ни глаз голубых, ни роста высокого,<br>Но ты всё равно ко мне подошла<br>И наградила улыбкой широкою.</p>
+          <p>И что же скажи во мне ты нашла?<br>Ведь чёрствым и грубым порой я бываю,<br>Но ты всё равно ко мне подошла<br>И эту улыбку я уже знаю.</p>
+          <p>И что же скажи во мне ты нашла?<br>Этот вопрос не даёт мне покоя<br>С той самой секунды, как ты подошла<br>И стала навеки самой родною.</p>
+        </article>
+
+        <article class="poem" id="poem-3" role="tabpanel" aria-labelledby="tab-3" hidden>
+          <h3 class="poem__title">Слова</h3>
+          <p>Острой бритвой в гневе становятся слова,<br>Что бросаешь в человека для тебя родного.<br>Они сердце поразят, как поражает цель стрела<br>И ждать исхода не приходится иного.</p>
+          <p>Мгновение назад бурлила в жилах кровь.<br>Слова, как шпага, протыкала оппонента<br>И отодвинул пыл на задний план любовь,<br>Что стала неожиданно кусочком рудимента.</p>
+          <p>Мы любим говорить слово прости<br>Полагая что, оно залечит раны сердца,<br>Но, к сожалению, слово не всегда может спасти,<br>Если сказал его ты по инерции.</p>
+        </article>
+
+        <article class="poem" id="poem-4" role="tabpanel" aria-labelledby="tab-4" hidden>
+          <h3 class="poem__title">Лекарство от одиночества</h3>
+          <p>У меня есть место, где могу спрятаться,<br>Где будет всё, как я захочу.<br>Там вокруг солнца земли не вертятся,<br>Там не зажечь ночью свечу.</p>
+          <p>Всё в полумраке, почти без намёка на свет.<br>Так никто не увидит, не найдёт, не узнает.<br>Убегая туда, я путаю след,<br>Лишь для тебя он подсказками станет.</p>
+          <p>Ты пойдёшь по нему, собирая хлебные крошки<br>Так и не зная, что ждёт впереди.<br>Прошу, не сворачивай только с этой дорожки,<br>Чтобы тебя не заставляло сойти.</p>
+          <p>В конце постучишь ты в закрытую дверь.<br>В ту, что видна будет только тебе,<br>А я без сомнений открою, теперь<br>Отдадимся на волю старушке судьбе.</p>
+          <p>Пусть она нам укажет дорогу,<br>По которой вместе с тобой мы пойдём.<br>Пусть она счастья даст нам немного,<br>А все неудачи смоет дождём.</p>
+          <p>Нет я или ты, есть только мы.<br>Забыта дорога к месту, где прятался<br>И теперь понимаешь, что у старушки судьбы<br>Есть для каждого план, который испортить пытаемся.</p>
+        </article>
+
+        <article class="poem" id="poem-5" role="tabpanel" aria-labelledby="tab-5" hidden>
+          <h3 class="poem__title">Призраки прошлого</h3>
+          <p>Я увижу тебя через долгие десятки лет<br>Снова эти глаза, этот смех, этот голос,<br>Но родного в них для меня ничего уже нет<br>И в разговоре с тобой я чувствую холод.</p>
+          <p>Нет на твоей голове тех задорных косичек.<br>Не ласкает мой взгляд при встрече улыбка<br>И мне не понять, остался ли я тебе симпатичен<br>Или наше знакомство для тебя большая ошибка.</p>
+          <p>Нет жарких объятий после долгой разлуки.<br>Не станешь делиться со мною ты тайной.<br>Не синхронны теперь сердец наши стуки,<br>А все совпадения будут случайны.</p>
+          <p>Много в памяти моей воспоминаний,<br>Где бежим на встречу счастью мы вдвоём,<br>Но их стирают километры расстояний<br>И друг друга мы уже не узнаём.</p>
+          <p>Наша жизнь теперь наполнена другими.<br>С их сердцами наши бьются в унисон<br>И с каждым годом мы становимся чужими,<br>А всё что было, напоминает сон.</p>
+          <p>Словно призраки мы в памяти блуждаем<br>Уйти не можем, но не можем и остаться<br>И что нам делать мы не понимаем,<br>С призраками прошлого не можем мы расстаться.</p>
+          <p>Не можешь ты поймать в движениях моих<br>Ту лёгкость, что была при первой встрече.<br>Не вызывает упоения в душе мой стих,<br>Который посвятил тебе в последний вечер.</p>
+          <p>И уж давно друг друга мы должны забыть<br>Расстояние и время нас с тобою разделили,<br>Но призраками прошлого мы продолжим жить<br>Они напоминание, о времени, когда любили.</p>
+        </article>
+      </div>
     </section>
 
     <section class="about" id="about">
-      <h2 class="section-title">Об авторе</h2>
-      <p>Несколько слов об авторе.</p>
+      <p class="label">Об авторе</p>
+      <p class="about__text">Вячеслав Алексейчиков — автор двух поэтических сборников: «Тайны одинокого сердца» и «Между строк».</p>
     </section>
   </main>
 
   <footer class="site-footer">
-    <p>© <span id="year"></span> Имя Автора</p>
+    <span>© <span id="year"></span> Вячеслав Алексейчиков</span>
+    <a href="#top">Наверх ↑</a>
   </footer>
 
   <script src="script.js"></script>

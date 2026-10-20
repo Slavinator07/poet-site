@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="23.52" height="23.52" viewBox="0 0 23.52 23.52" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle id="Knob L cap" cx="11.76" cy="11.76" r="11.76" fill="url(#paint0_radial_0_42)"/>
+<defs>
+<radialGradient id="paint0_radial_0_42" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(11.76 11.76) scale(11.76)">
+<stop stop-color="#8B8B90"/>
+<stop offset="1" stop-color="#3A3A3D"/>
+</radialGradient>
+</defs>
+</svg>
