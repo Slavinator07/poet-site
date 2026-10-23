@@ -11,3 +11,4 @@
 - Awwwards (SOTD 22.10) · [Emotion Agency](https://www.awwwards.com/sites/emotion-agency-1) · тёмная тема, частицы с реакцией на мышь · вариант A
 - Siteinspire (16.10) · [David McGillivray](https://www.siteinspire.com/website/2969-david-mcgillivray) · белое поле, маленький центрированный заголовок, предметы по одному в колонке из размытия, подписи по углам · вариант B
 - One Page Love (20.10) · [Aniket](https://onepagelove.com/aniket) · узкая колонка, коллаж на сетке, связи тонкими линиями, перетаскивание · вариант C
+- Решение 23.10: ни один вариант не взят, на главной остаётся вариант C от 20.10.
