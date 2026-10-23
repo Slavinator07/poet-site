@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Вариант B — Предметы тишины</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  /* Референс: David McGillivray (Siteinspire, 16.10.2026): белое поле, маленький центрированный заголовок,
+     предметы по одному в центральной колонке — следующий всплывает из размытия, подписи по углам. */
+  :root { --bg: #ffffff; --ink: #141414; --muted: #8a8780; --accent: #b3261e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Cormorant Garamond", serif; -webkit-font-smoothing: antialiased; overflow: hidden; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .02em; }
+
+  .corner { position: fixed; z-index: 2; display: flex; gap: 24px; align-items: center; }
+  .tl { top: 24px; left: 32px; } .tr { top: 20px; right: 32px; }
+  .bl { bottom: 28px; left: 32px; } .br { bottom: 28px; right: 32px; }
+  .tr .pill { padding: 6px 12px; border: 1px solid #e5e3dd; border-radius: 999px; }
+  .tr .pill:hover, .tl a:hover { color: var(--accent); }
+
+  h1 {
+    position: fixed; z-index: 2; top: 22px; left: 50%; transform: translateX(-50%);
+    font-weight: 500; font-size: 22px; line-height: 1.05; text-align: center;
+  }
+  h1 span { display: block; }
+  h1 em { color: var(--accent); font-style: italic; }
+  .lead { font-size: 18px; line-height: 1.4; max-width: 340px; }
+  .btn { padding: 12px 22px; border-radius: 999px; background: var(--ink); color: var(--bg); }
+  .btn:hover { background: var(--accent); }
+  .link { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Колонка предметов */
+  .column { position: fixed; inset: 0; }
+  .item {
+    position: absolute; left: 50%; top: 50%;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    transform: translate(-50%, calc(-50% + var(--y, 60vh))) scale(var(--s, .9));
+    opacity: var(--o, 0); filter: blur(var(--b, 12px));
+    transition: transform 1.4s cubic-bezier(.7, 0, .2, 1), opacity 1.4s, filter 1.4s;
+    text-align: center;
+  }
+  .item img { width: 220px; height: auto; box-shadow: 0 40px 60px -30px rgba(0,0,0,.35); }
+  .item q { quotes: none; max-width: 640px; font-style: italic; font-size: 44px; line-height: 1.1; }
+  .item small { color: var(--muted); }
+  .item.is-current { --y: 0px; --s: 1; --o: 1; --b: 0px; }
+  .item.is-next { --y: 44vh; --s: .86; --o: .55; --b: 8px; }
+  .item.is-prev { --y: -44vh; --s: .86; --o: 0; --b: 10px; }
+</style>
+</head>
+<body>
+  <nav class="corner tl mono"><a href="#">Книги</a><a href="#">Стихи</a><a href="#">Об авторе</a></nav>
+  <h1><span>Кричащая тишина</span><span>несказанных</span><em>слов</em></h1>
+  <div class="corner tr mono"><a class="pill" href="#">Купить книги</a><span>(2)</span></div>
+
+  <div class="column" id="column" aria-hidden="true">
+    <div class="item"><img src="../../assets/books/mezhdu-strok.jpg" width="1061" height="1500" alt=""><small class="mono">«Между строк» — вторая книга</small></div>
+    <div class="item"><q>Слова о любви потеряли былую силу</q><small class="mono">из стихотворения «Без слов»</small></div>
+    <div class="item"><img src="../../assets/books/tajny-odinokogo-serdtsa.jpg" width="1061" height="1500" alt=""><small class="mono">«Тайны одинокого сердца» — первая книга</small></div>
+    <div class="item"><q>Острой бритвой в гневе становятся слова</q><small class="mono">из стихотворения «Слова»</small></div>
+    <div class="item"><q>Но призраками прошлого мы продолжим жить</q><small class="mono">из стихотворения «Призраки прошлого»</small></div>
+  </div>
+
+  <div class="corner bl"><p class="lead">О том, что чувствуют все, но говорят немногие.</p></div>
+  <div class="corner br mono"><a class="link" href="#">Читать стихи</a><a class="btn" href="#">Выбрать книгу</a></div>
+
+<script>
+// Предметы идут по центральной колонке снизу вверх: следующий всплывает из размытия, прошлый растворяется.
+const items = [...document.querySelectorAll(".item")];
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const HOLD = 3600;
+let i = 0, paused = false;
+
+function show() {
+  items.forEach((el, k) => {
+    el.classList.toggle("is-current", k === i);
+    el.classList.toggle("is-next", k === (i + 1) % items.length);
+    el.classList.toggle("is-prev", k === (i - 1 + items.length) % items.length);
+  });
+}
+show();
+if (!reduce) {
+  setInterval(() => { if (!paused) { i = (i + 1) % items.length; show(); } }, HOLD);
+  document.getElementById("column").addEventListener("pointerover", (e) => (paused = !!e.target.closest(".is-current")));
+  addEventListener("wheel", (e) => { i = (i + (e.deltaY > 0 ? 1 : items.length - 1)) % items.length; show(); }, { passive: true });
+}
+</script>
+</body>
+</html>

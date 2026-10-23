@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Вариант C — Созвездие строк</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Literata:opsz,wght@7..72,400&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  /* Референс: Aniket (One Page Love, 20.10.2026): узкая колонка текста, интерактивный коллаж
+     на тонкой сетке, элементы связаны тонкими цветными линиями, их можно перетаскивать. */
+  :root { --bg: #f4f3ef; --ink: #18171a; --muted: #6b6862; --grid: #e6e4de; --accent: #b3261e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: "Literata", serif; -webkit-font-smoothing: antialiased;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    overflow: hidden; height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+
+  .side {
+    position: fixed; z-index: 3; top: 0; bottom: 0; left: 0; width: 420px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 28px 40px 32px; background: var(--bg); border-right: 1px solid var(--grid);
+  }
+  .side nav { display: flex; gap: 22px; margin-top: 14px; color: var(--muted); }
+  .side nav a:hover { color: var(--accent); }
+  h1 { font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: 66px; line-height: .98; letter-spacing: -.01em; }
+  h1 em { color: var(--accent); }
+  .lead { margin-top: 24px; font-size: 18px; line-height: 1.5; }
+  .actions { display: flex; gap: 20px; align-items: center; }
+  .btn { padding: 14px 24px; border-radius: 999px; background: var(--ink); color: var(--bg); }
+  .btn:hover { background: var(--accent); }
+  .link { text-decoration: underline; text-underline-offset: 3px; }
+  .hint { color: var(--muted); }
+
+  /* Доска */
+  .board { position: fixed; inset: 0 0 0 420px; }
+  svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  svg line { stroke: var(--accent); stroke-width: 1; opacity: .75; }
+  svg circle { fill: var(--accent); }
+  .node {
+    position: absolute; touch-action: none; cursor: grab; user-select: none;
+    background: #fbfaf6; box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    transition: box-shadow .2s;
+  }
+  .node:active { cursor: grabbing; box-shadow: 0 20px 50px rgba(0,0,0,.16); }
+  .node img { display: block; width: 150px; height: auto; pointer-events: none; }
+  .node.text { padding: 18px 22px; max-width: 300px; }
+  .node.text p { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 24px; line-height: 1.2; }
+  .node.text span { display: block; margin-top: 10px; color: var(--muted); }
+</style>
+</head>
+<body>
+  <aside class="side">
+    <div>
+      <a class="mono" href="../../">ВА · Вячеслав Алексейчиков</a>
+      <nav class="mono"><a href="#">Книги</a><a href="#">Стихи</a><a href="#">Об авторе</a></nav>
+    </div>
+    <div>
+      <h1>Кричащая тишина несказанных <em>слов</em></h1>
+      <p class="lead">О том, что чувствуют все, но говорят немногие.</p>
+    </div>
+    <div>
+      <div class="actions mono"><a class="btn" href="#">Выбрать книгу</a><a class="link" href="#">Читать стихи</a></div>
+      <p class="hint mono" style="margin-top:20px">← строки можно перетаскивать</p>
+    </div>
+  </aside>
+
+  <section class="board" id="board" aria-label="Строки и книги">
+    <svg id="threads" aria-hidden="true"></svg>
+    <div class="node" data-x=".08" data-y=".12"><img src="../../assets/books/mezhdu-strok.jpg" width="1061" height="1500" alt="Обложка «Между строк»"></div>
+    <div class="node text" data-x=".42" data-y=".08"><p>Сегодня слова о любви ничего в себе не несут.</p><span class="mono">Без слов</span></div>
+    <div class="node text" data-x=".55" data-y=".42"><p>Острой бритвой в гневе становятся слова,</p><span class="mono">Слова</span></div>
+    <div class="node" data-x=".78" data-y=".18"><img src="../../assets/books/tajny-odinokogo-serdtsa.jpg" width="1061" height="1500" alt="Обложка «Тайны одинокого сердца»"></div>
+    <div class="node text" data-x=".14" data-y=".62"><p>У меня есть место, где могу спрятаться,</p><span class="mono">Лекарство от одиночества</span></div>
+    <div class="node text" data-x=".86" data-y=".66"><p>Я увижу тебя через долгие десятки лет</p><span class="mono">Призраки прошлого</span></div>
+    <div class="node text" data-x=".42" data-y=".9"><p>И что же скажи во мне ты нашла?</p><span class="mono">И что же скажи…</span></div>
+  </section>
+
+<script>
+// Строки стихов и книги — точки созвездия, связанные красными нитями. Их можно таскать; в покое они медленно плывут.
+const board = document.getElementById("board");
+const svg = document.getElementById("threads");
+const nodes = [...board.querySelectorAll(".node")];
+const edges = [[0, 1], [1, 2], [2, 3], [0, 4], [4, 6], [6, 5], [5, 2], [3, 5]];
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS = "http://www.w3.org/2000/svg";
+
+const state = nodes.map((el, i) => ({
+  el, x: 0, y: 0, phase: i * 1.7,
+  fx: +el.dataset.x, fy: +el.dataset.y, dragging: false
+}));
+function place() {
+  const W = board.clientWidth, H = board.clientHeight;
+  state.forEach((s) => { s.x = s.fx * (W - s.el.offsetWidth); s.y = s.fy * (H - s.el.offsetHeight); });
+}
+
+const lines = edges.map(() => svg.appendChild(document.createElementNS(NS, "line")));
+const dots = edges.flatMap(() => [0, 1].map(() => { const c = svg.appendChild(document.createElementNS(NS, "circle")); c.setAttribute("r", 2.5); return c; }));
+
+let t = 0;
+function frame() {
+  t += 0.01;
+  const centers = state.map((s) => {
+    const dx = s.dragging || reduce ? 0 : Math.sin(t + s.phase) * 6;
+    const dy = s.dragging || reduce ? 0 : Math.cos(t * .8 + s.phase) * 5;
+    s.el.style.transform = `translate(${s.x + dx}px, ${s.y + dy}px)`;
+    return [s.x + dx + s.el.offsetWidth / 2, s.y + dy + s.el.offsetHeight / 2];
+  });
+  edges.forEach(([a, b], k) => {
+    const [x1, y1] = centers[a], [x2, y2] = centers[b];
+    lines[k].setAttribute("x1", x1); lines[k].setAttribute("y1", y1);
+    lines[k].setAttribute("x2", x2); lines[k].setAttribute("y2", y2);
+    dots[k * 2].setAttribute("cx", x1); dots[k * 2].setAttribute("cy", y1);
+    dots[k * 2 + 1].setAttribute("cx", x2); dots[k * 2 + 1].setAttribute("cy", y2);
+  });
+  requestAnimationFrame(frame);
+}
+
+state.forEach((s) => {
+  s.el.style.zIndex = 1;
+  s.el.addEventListener("pointerdown", (e) => {
+    s.dragging = true; s.el.setPointerCapture(e.pointerId);
+    s.el.style.zIndex = 2 + Math.round(performance.now() / 100);
+    const sx = e.clientX - s.x, sy = e.clientY - s.y;
+    const move = (ev) => { s.x = ev.clientX - sx; s.y = ev.clientY - sy; };
+    const up = () => { s.dragging = false; s.el.removeEventListener("pointermove", move); };
+    s.el.addEventListener("pointermove", move);
+    s.el.addEventListener("pointerup", up, { once: true });
+  });
+});
+
+addEventListener("load", () => { place(); frame(); });
+addEventListener("resize", place);
+</script>
+</body>
+</html>
