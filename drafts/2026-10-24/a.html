@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Вариант A — Время суток</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Literata:opsz,wght@7..72,400&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  /* Референс: Brandon Yasin (Awwwards SOTD 24.10.2026): палитра меняется по времени суток,
+     часы можно перетащить, чтобы «путешествовать во времени»; редакционная типографика. */
+  :root { --bg: #f4f3ef; --ink: #18171a; --muted: #6b6862; --accent: #b3261e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: "Literata", serif; -webkit-font-smoothing: antialiased;
+    min-height: 100vh; display: flex; flex-direction: column;
+    transition: background-color 1.2s ease, color 1.2s ease;
+  }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+  .head { display: flex; justify-content: space-between; align-items: center; padding: 22px 40px; }
+  .head nav { display: flex; gap: 28px; }
+  .head a:hover { color: var(--accent); }
+  .buy { padding: 10px 16px; border: 1px solid currentColor; }
+
+  .stage { flex: 1; display: grid; grid-template-columns: 1fr 380px; align-items: center; gap: 64px; padding: 0 40px; }
+  h1 { font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: clamp(72px, 8vw, 132px); line-height: .92; letter-spacing: -.02em; }
+  h1 em { color: var(--accent); }
+  .quote { margin-top: 40px; max-width: 620px; min-height: 2.6em; font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 30px; line-height: 1.25; transition: opacity .6s; }
+  .quote small { display: block; margin-top: 10px; color: var(--muted); font-style: normal; transition: color 1.2s; }
+
+  /* Часы */
+  .clock { position: relative; width: 340px; height: 340px; border-radius: 50%; border: 1px solid currentColor; touch-action: none; cursor: grab; user-select: none; }
+  .clock:active { cursor: grabbing; }
+  .clock .tick { position: absolute; left: 50%; top: 0; width: 1px; height: 50%; transform-origin: 50% 100%; }
+  .clock .tick::before { content: ""; display: block; width: 1px; height: 10px; background: currentColor; opacity: .5; }
+  .clock .tick.major::before { height: 18px; opacity: 1; }
+  .hand { position: absolute; left: 50%; top: 18px; width: 2px; height: calc(50% - 18px); margin-left: -1px; background: var(--accent); transform-origin: 50% 100%; }
+  .hand::before { content: ""; position: absolute; top: -7px; left: -6px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); }
+  .readout { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 6px; }
+  .readout b { font-family: "PT Mono", monospace; font-weight: 400; font-size: 44px; }
+  .now { margin-top: 18px; text-align: center; cursor: pointer; background: none; border: 0; color: inherit; width: 340px; opacity: .7; }
+  .now:hover { opacity: 1; }
+
+  .bottom { display: flex; justify-content: space-between; align-items: flex-end; padding: 20px 40px 32px; }
+  .lead { font-size: 18px; line-height: 1.5; }
+  .actions { display: flex; gap: 20px; align-items: center; }
+  .btn { padding: 14px 24px; border-radius: 999px; background: var(--ink); color: var(--bg); transition: background-color 1.2s, color 1.2s; }
+  .btn:hover { background: var(--accent); }
+  .link { text-decoration: underline; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+  <header class="head mono">
+    <a href="../../">ВА · Вячеслав Алексейчиков</a>
+    <nav><a href="#">Книги</a><a href="#">Стихи</a><a href="#">Об авторе</a></nav>
+    <a class="buy" href="#">Купить книги</a>
+  </header>
+
+  <section class="stage">
+    <div>
+      <h1>Кричащая тишина несказанных <em>слов</em></h1>
+      <p class="quote" id="quote"></p>
+    </div>
+    <div>
+      <div class="clock" id="clock" role="slider" aria-label="Время суток" aria-valuemin="0" aria-valuemax="24" tabindex="0">
+        <div class="hand" id="hand"></div>
+        <div class="readout"><b id="time">00:00</b><span class="mono" id="period"></span></div>
+      </div>
+      <button class="now mono" id="now">↺ вернуть текущее время</button>
+    </div>
+  </section>
+
+  <div class="bottom">
+    <p class="lead">О том, что чувствуют все, но говорят немногие.</p>
+    <div class="actions mono"><a class="link" href="#">Читать стихи</a><a class="btn" href="#">Выбрать книгу</a></div>
+  </div>
+
+<script>
+// Экран живёт по часам читателя: утро светлое, ночь чёрная. Стрелку можно перетащить — и сменится время, цвет и строка.
+const periods = [
+  { from: 5,  name: "утро",  bg: "#f4f3ef", ink: "#18171a", muted: "#6b6862",
+    line: "Где бежим на встречу счастью мы вдвоём,", poem: "Призраки прошлого" },
+  { from: 11, name: "день",  bg: "#ffffff", ink: "#111111", muted: "#77746f",
+    line: "Но ты всё равно ко мне подошла<br>И наградила улыбкой широкою.", poem: "И что же скажи во мне ты нашла?" },
+  { from: 17, name: "вечер", bg: "#8d8a84", ink: "#141414", muted: "#2e2d2b",
+    line: "Который посвятил тебе в последний вечер.", poem: "Призраки прошлого" },
+  { from: 22, name: "ночь",  bg: "#0f0f10", ink: "#efede7", muted: "#8b8882",
+    line: "Там вокруг солнца земли не вертятся,<br>Там не зажечь ночью свечу.", poem: "Лекарство от одиночества" }
+];
+const root = document.documentElement.style;
+const clock = document.getElementById("clock");
+const hand = document.getElementById("hand");
+const quote = document.getElementById("quote");
+let current = null;
+
+// Деления: 24 часа
+for (let h = 0; h < 24; h++) {
+  const t = document.createElement("i");
+  t.className = "tick" + (h % 6 === 0 ? " major" : "");
+  t.style.transform = `translateX(-50%) rotate(${h * 15}deg)`;
+  clock.prepend(t);
+}
+
+function periodOf(h) {
+  let p = periods[periods.length - 1];
+  for (const x of periods) if (h >= x.from) p = x;
+  return h < periods[0].from ? periods[periods.length - 1] : p;
+}
+function setTime(minutes) {
+  minutes = ((minutes % 1440) + 1440) % 1440;
+  const h = Math.floor(minutes / 60), m = Math.floor(minutes % 60);
+  hand.style.transform = `rotate(${minutes / 4}deg)`; // 24 часа = 360°
+  document.getElementById("time").textContent = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  clock.setAttribute("aria-valuenow", h);
+  const p = periodOf(h);
+  if (p !== current) {
+    current = p;
+    root.setProperty("--bg", p.bg); root.setProperty("--ink", p.ink); root.setProperty("--muted", p.muted);
+    document.getElementById("period").textContent = p.name;
+    quote.style.opacity = 0;
+    setTimeout(() => { quote.innerHTML = `${p.line}<small class="mono">«${p.poem}»</small>`; quote.style.opacity = 1; }, 300);
+  }
+}
+const nowMinutes = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
+setTime(nowMinutes());
+
+// Перетаскивание стрелки
+function fromPointer(e) {
+  const b = clock.getBoundingClientRect();
+  const a = Math.atan2(e.clientX - (b.left + b.width / 2), -(e.clientY - (b.top + b.height / 2)));
+  setTime(((a * 180 / Math.PI + 360) % 360) * 4);
+}
+clock.addEventListener("pointerdown", (e) => { clock.setPointerCapture(e.pointerId); fromPointer(e); clock.onpointermove = fromPointer; });
+clock.addEventListener("pointerup", () => (clock.onpointermove = null));
+clock.addEventListener("keydown", (e) => {
+  const cur = parseFloat(hand.style.transform.match(/[\d.]+/)) * 4;
+  if (e.key === "ArrowRight" || e.key === "ArrowUp") setTime(cur + 60);
+  if (e.key === "ArrowLeft" || e.key === "ArrowDown") setTime(cur - 60);
+});
+document.getElementById("now").addEventListener("click", () => setTime(nowMinutes()));
+</script>
+</body>
+</html>

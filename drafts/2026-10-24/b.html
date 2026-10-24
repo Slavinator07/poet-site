@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Вариант B — Истории</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Literata:opsz,wght@7..72,400&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  /* Референс: Life Stories (Siteinspire, 07.10.2026): истории сменяют друг друга с полосками прогресса,
+     имя + «on …» + действие; большой абзац «прочитывается» — слова темнеют одно за другим. */
+  :root { --bg: #fafaf7; --ink: #18171a; --ghost: #d3d0c9; --muted: #77746f; --accent: #b3261e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Literata", serif; -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+  .head { display: flex; justify-content: space-between; align-items: center; padding: 22px 40px; }
+  .head nav { display: flex; gap: 28px; }
+  .head a:hover { color: var(--accent); }
+
+  .stage { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 40px; }
+  /* Заголовок «читается»: слова по очереди проявляются из бледного */
+  h1 { max-width: 1200px; font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: clamp(72px, 8.2vw, 136px); line-height: .95; letter-spacing: -.02em; }
+  h1 span { color: var(--ghost); transition: color .7s ease; }
+  h1 span.read { color: var(--ink); }
+  h1 span.read.accent { color: var(--accent); }
+
+  /* Лента историй */
+  .stories { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 40px; margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--ghost); }
+  .bars { display: flex; gap: 6px; grid-column: 1 / -1; }
+  .bars button { flex: 1; height: 2px; border: 0; background: var(--ghost); cursor: pointer; position: relative; overflow: hidden; padding: 8px 0; background-clip: content-box; }
+  .bars button i { position: absolute; left: 0; top: 8px; height: 2px; width: 0; background: var(--ink); }
+  .bars button.done i { width: 100%; }
+  .bars button.on i { animation: fill var(--dur) linear forwards; }
+  @keyframes fill { to { width: 100%; } }
+  .story { transition: opacity .5s, transform .5s; }
+  .story.out { opacity: 0; transform: translateY(8px); }
+  .story h2 { font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: 34px; }
+  .story h2 i { color: var(--muted); }
+  .story p { margin-top: 8px; font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 24px; color: var(--muted); }
+  .read-btn { padding: 14px 22px; border: 1px solid var(--ink); border-radius: 999px; white-space: nowrap; }
+  .read-btn:hover { background: var(--ink); color: var(--bg); }
+
+  .bottom { display: flex; justify-content: space-between; align-items: flex-end; padding: 20px 40px 32px; }
+  .lead { font-size: 18px; line-height: 1.5; }
+  .actions { display: flex; gap: 20px; align-items: center; }
+  .btn { padding: 14px 24px; border-radius: 999px; background: var(--ink); color: var(--bg); }
+  .btn:hover { background: var(--accent); }
+</style>
+</head>
+<body>
+  <header class="head mono">
+    <a href="../../">ВА · Вячеслав Алексейчиков</a>
+    <nav><a href="#">Книги</a><a href="#">Стихи</a><a href="#">Об авторе</a></nav>
+    <a href="#">Купить книги</a>
+  </header>
+
+  <section class="stage">
+    <h1 id="title" aria-label="Кричащая тишина несказанных слов">Кричащая тишина несказанных слов</h1>
+
+    <div class="stories">
+      <div class="bars" id="bars"></div>
+      <div class="story" id="story" aria-live="polite"></div>
+      <a class="read-btn mono" href="#" id="read">Читать стихотворение →</a>
+    </div>
+  </section>
+
+  <div class="bottom">
+    <p class="lead">О том, что чувствуют все, но говорят немногие.</p>
+    <div class="actions mono"><a class="btn" href="#">Выбрать книгу</a></div>
+  </div>
+
+<script>
+// 1) Заголовок «читается» по слову. 2) Под ним, как истории, сменяются стихотворения — каждое со своей полоской времени.
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const title = document.getElementById("title");
+const words = title.textContent.trim().split(" ");
+title.innerHTML = words.map((w, i) => `<span${i === words.length - 1 ? ' class="accent"' : ""} aria-hidden="true">${w}</span>`).join(" ");
+const spans = [...title.querySelectorAll("span")];
+spans.forEach((s, i) => setTimeout(() => s.classList.add("read"), reduce ? 0 : 500 + i * 420));
+
+const stories = [
+  { title: "Без слов", on: "о признании, которое громче тишины", line: "«Я люблю тебя» – и будет слышно даже глухому." },
+  { title: "И что же скажи во мне ты нашла?", on: "о вопросе без ответа", line: "Этот вопрос не даёт мне покоя" },
+  { title: "Слова", on: "о словах, сказанных в гневе", line: "Острой бритвой в гневе становятся слова," },
+  { title: "Лекарство от одиночества", on: "о месте, где можно спрятаться", line: "Нет я или ты, есть только мы." },
+  { title: "Призраки прошлого", on: "о тех, кого мы больше не узнаём", line: "Но призраками прошлого мы продолжим жить" }
+];
+const DUR = 6000;
+const bars = document.getElementById("bars");
+const story = document.getElementById("story");
+document.documentElement.style.setProperty("--dur", DUR + "ms");
+stories.forEach((s, i) => {
+  const b = document.createElement("button");
+  b.setAttribute("aria-label", s.title);
+  b.innerHTML = "<i></i>";
+  b.addEventListener("click", () => go(i));
+  bars.append(b);
+});
+const btns = [...bars.children];
+let idx = -1, timer;
+
+function go(i) {
+  idx = i;
+  clearTimeout(timer);
+  btns.forEach((b, k) => { b.classList.toggle("done", k < i); b.classList.remove("on"); });
+  void btns[i].offsetWidth; // перезапуск анимации полоски
+  btns[i].classList.add("on");
+  story.classList.add("out");
+  setTimeout(() => {
+    const s = stories[i];
+    story.innerHTML = `<h2>${s.title} <i>— ${s.on}</i></h2><p>${s.line}</p>`;
+    story.classList.remove("out");
+  }, 300);
+  if (!reduce) timer = setTimeout(() => go((i + 1) % stories.length), DUR);
+}
+go(0);
+</script>
+</body>
+</html>

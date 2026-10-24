@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Вариант C — Раскрытая книга</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Literata:opsz,wght@7..72,400&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  /* Референс: Duo Case (One Page Love, 24.10.2026): кинематографичный чёрный, огромная типографика,
+     предмет раскрывается прокруткой (scroll-controlled). */
+  :root { --bg: #0b0b0c; --ink: #f1efe9; --muted: #8b8882; --accent: #d8473d; --paper: #f6f3ec; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Literata", serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "PT Mono", monospace; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+
+  .head { position: fixed; z-index: 5; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 22px 40px; }
+  .head nav { display: flex; gap: 28px; color: var(--muted); }
+  .head nav a:hover { color: var(--ink); }
+  .buy { padding: 10px 16px; border: 1px solid var(--ink); }
+  .buy:hover { background: var(--ink); color: var(--bg); }
+
+  /* Длинная сцена: экран «прилипает», а прокрутка открывает книгу */
+  .scroll { height: 260vh; }
+  .sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+
+  h1 {
+    position: absolute; left: 0; right: 0; top: 38%; transform: translateY(calc(-50% - var(--p) * 16vh));
+    font-family: "Cormorant Garamond", serif; font-weight: 500; text-align: center;
+    font-size: 11.5vw; line-height: .9; letter-spacing: -.03em;
+    opacity: calc(1 - var(--p) * .78);
+  }
+  h1 span { display: block; }
+  h1 em { color: var(--accent); }
+
+  /* Книга */
+  .book {
+    --w: 250px; --h: 354px;
+    position: absolute; left: 50%; top: 50%; width: calc(var(--w) * 2); height: var(--h);
+    transform: translate(-50%, -42%) translateX(calc((1 - var(--p)) * var(--w) * -.5)) translateY(calc((1 - var(--p)) * 27vh)) rotateX(calc(14deg * (1 - var(--p)))) scale(calc(.5 + var(--p) * .6));
+    perspective: 1800px; transform-style: preserve-3d;
+  }
+  .page { position: absolute; left: 50%; top: 0; width: var(--w); height: var(--h); background: var(--paper); color: #1a191b; padding: 34px 30px; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  .page h2 { font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 500; font-size: 26px; margin-bottom: 16px; }
+  .page p { font-family: "Cormorant Garamond", serif; font-size: 17px; line-height: 1.5; }
+  .page small { position: absolute; bottom: 22px; left: 30px; color: #8a8780; }
+  .cover {
+    position: absolute; left: 50%; top: 0; width: var(--w); height: var(--h);
+    transform-origin: 0 50%; transform: rotateY(calc(var(--p) * -178deg)); transform-style: preserve-3d;
+  }
+  .cover img, .cover .inside { position: absolute; inset: 0; width: 100%; height: 100%; backface-visibility: hidden; }
+  .cover img { object-fit: cover; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+  .cover .inside { transform: rotateY(180deg); background: #ece8df; display: grid; place-content: center; text-align: center; color: #1a191b; padding: 30px; }
+  .cover .inside p { font-family: "Cormorant Garamond", serif; font-size: 22px; line-height: 1.2; }
+
+  .hint { position: absolute; right: 40px; bottom: 100px; color: var(--muted); opacity: calc(1 - var(--p) * 3); }
+  .bottom { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: flex-end; padding: 20px 40px 32px; }
+  .lead { font-size: 18px; line-height: 1.5; }
+  .actions { display: flex; gap: 20px; align-items: center; }
+  .btn { padding: 14px 24px; border-radius: 999px; background: var(--ink); color: var(--bg); }
+  .btn:hover { background: var(--accent); color: var(--ink); }
+  .link { text-decoration: underline; text-underline-offset: 3px; }
+
+  .after { min-height: 60vh; display: grid; place-content: center; color: var(--muted); }
+</style>
+</head>
+<body>
+  <header class="head mono">
+    <a href="../../">ВА · Вячеслав Алексейчиков</a>
+    <nav><a href="#">Книги</a><a href="#">Стихи</a><a href="#">Об авторе</a></nav>
+    <a class="buy" href="#">Купить книги</a>
+  </header>
+
+  <section class="scroll" id="scroll">
+    <div class="sticky" id="sticky" style="--p: 0">
+      <h1><span>Кричащая тишина</span><span>несказанных <em>слов</em></span></h1>
+
+      <div class="book" aria-hidden="true">
+        <div class="page">
+          <h2>Без слов</h2>
+          <p>Слова о любви потеряли былую силу<br>И я не стану их тебе говорить.<br>Я лишь хочу, чтобы во взгляде моём ты ловила<br>Откровенье – без тебя мне не жить.</p>
+          <small class="mono">Между строк</small>
+        </div>
+        <div class="cover">
+          <img src="../../assets/books/mezhdu-strok.jpg" width="1061" height="1500" alt="">
+          <div class="inside"><p>Вячеслав<br>Алексейчиков</p></div>
+        </div>
+      </div>
+
+      <p class="hint mono">↓ листайте — книга откроется</p>
+      <div class="bottom">
+        <p class="lead">О том, что чувствуют все, но говорят немногие.</p>
+        <div class="actions mono"><a class="link" href="#">Читать стихи</a><a class="btn" href="#">Выбрать книгу</a></div>
+      </div>
+    </div>
+  </section>
+  <section class="after mono">дальше — разделы сайта</section>
+
+<script>
+// Прокрутка управляет книгой: 0 — закрыта, 1 — раскрыта на стихотворении «Без слов».
+const scroll = document.getElementById("scroll");
+const sticky = document.getElementById("sticky");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function update() {
+  const total = scroll.offsetHeight - innerHeight;
+  let p = Math.min(1, Math.max(0, -scroll.getBoundingClientRect().top / (total * .85)));
+  p = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; // мягкий разгон и торможение
+  sticky.style.setProperty("--p", reduce ? 1 : p.toFixed(4));
+}
+addEventListener("scroll", update, { passive: true });
+addEventListener("resize", update);
+update();
+</script>
+</body>
+</html>
